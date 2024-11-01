@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster Report - Chat Application</title>
+    <link rel="stylesheet" href="css/firstpage.css">
+    <link rel="stylesheet" href="css/styles.css"> 
+</head>
+<body>
+    <header class="head">
+        <nav class="top">
+         <div class="logo" >
+             <a href="#">Rescue Hub</a>
+         </div>
+ 
+         <div class="menu">
+             <a href="">Home</a>
+             <a href="">About</a>
+             <a href="">Service</a>
+             <a href="">Contact</a>
+             
+         </div>
+         <div class="login" style="padding-right: 60px;">
+         <button>
+             Contact
+         </button></div>
+        </nav>
+     </header>
+
+     <h1 style="margin-top: 50px;">Provide Neccessary Details</h1>
+
+    <main>
+        <div class="content-container">
+            <!-- Form Section -->
+            <section id="form-section">
+                <form id="disaster-form" enctype="multipart/form-data">
+                    <h2>Provide Disaster Details</h2>
+                    
+                    <!-- Form fields -->
+                    <label for="name">Name *</label>
+                    <input type="text" id="name" name="name" required>
+
+                    <label for="email">Email address *</label>
+                    <input type="email" id="email" name="email" required>
+
+                    <label for="disasterType">Type of Disaster *</label>
+                    <select id="disasterType" name="disasterType" required>
+                        <option value="" disabled selected>Select</option>
+                        <option value="Flood">Flood</option>
+                        <option value="Earthquake">Earthquake</option>
+                        <option value="Fire">Fire</option>
+                        <option value="Tornado">Tornado</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <label for="location">Location of Disaster *</label>
+                    <input type="text" id="location" name="location" required>
+
+                    <label for="datetime">Date and Time of Disaster *</label>
+                    <input type="datetime-local" id="datetime" name="datetime" required>
+
+                    <label for="images">Images related to the disaster</label>
+                    <input type="file" id="images" name="images" multiple>
+
+                    <label for="contact">Contact Number *</label>
+                    <input type="tel" id="contact" name="contact" required>
+
+                    <label for="comments">Additional Details or Comments</label>
+                    <textarea id="comments" name="comments"></textarea>
+
+                    <label for="additional-questions">Additional Questions or Comments</label>
+                    <textarea id="additional-questions" name="additional-questions"></textarea>
+
+                   
+                    <button type="submit">Submit</button>
+                </form>
+            </section>
+
+            <section id="chat-section">
+                <h2>Chat Box</h2>
+                <div id="chat-box">
+                    <!-- Chat messages will appear here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Disaster Management Chat. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Handling form submission and displaying the chat message
+        document.getElementById("disaster-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(this); // Create form data object
+
+            // Send the form data via AJAX to the server
+            fetch('/submit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    // Construct and display the chat message
+                    const chatBox = document.getElementById("chat-box");
+                    const messageDiv = document.createElement("div");
+                    messageDiv.classList.add("chat-message");
+
+                    let messageContent = `
+                        <strong>Name:</strong> ${formData.get('name')}<br>
+                        <strong>Email:</strong> ${formData.get('email')}<br>
+                        <strong>Type of Disaster:</strong> ${formData.get('disasterType')}<br>
+                        <strong>Location:</strong> ${formData.get('location')}<br>
+                        <strong>Date and Time:</strong> ${formData.get('datetime')}<br>
+                        <strong>Contact:</strong> ${formData.get('contact')}<br>
+                    `;
+
+                    if (formData.get('comments')) {
+                        messageContent += `<strong>Comments:</strong> ${formData.get('comments')}<br>`;
+                    }
+
+                    if (formData.get('additional-questions')) {
+                        messageContent += `<strong>Additional Questions:</strong> ${formData.get('additional-questions')}<br>`;
+                    }
+
+                    // Append the message to the chat box
+                    messageDiv.innerHTML = messageContent;
+                    chatBox.appendChild(messageDiv);
+                    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+
+                    // Clear the form fields
+                    document.getElementById("disaster-form").reset();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
